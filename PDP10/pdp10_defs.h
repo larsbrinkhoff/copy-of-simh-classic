@@ -683,6 +683,8 @@ typedef struct pdp_dib DIB;
 #define IOLN_PTR        004
 #define IOBA_PTP        (IO_UBA3 + 017554)              /* PC11 punch */
 #define IOLN_PTP        004
+#define IOBA_CH         (IO_UBA3 + 0764140)             /* CH11 Chaosnet */
+#define IOLN_CH         020
 
 /* Common Unibus CSR flags */
 
@@ -721,6 +723,7 @@ typedef struct pdp_dib DIB;
 #define INT_V_CR        27                              /* CD20 (CD11) */
 #define INT_V_DUPRX     28                              /* DUP11 */
 #define INT_V_DUPTX     29
+#define INT_V_CH        30
 
 #define INT_RP          (1u << INT_V_RP)
 #define INT_TU          (1u << INT_V_TU)
@@ -738,6 +741,7 @@ typedef struct pdp_dib DIB;
 #define INT_CR          (1u << INT_V_CD)
 #define INT_DUPRX       (1u << INT_V_DUPRX)
 #define INT_DUPTX       (1u << INT_V_DUPTX)
+#define INT_CH          (1u << INT_V_CH)
 
 #define IPL_RP          6                               /* int levels */
 #define IPL_TU          6
@@ -750,6 +754,7 @@ typedef struct pdp_dib DIB;
 #define IPL_RY          5
 #define IPL_DUPRX       5
 #define IPL_DUPTX       5
+#define IPL_CH          5
 #define IPL_PTR         4
 #define IPL_PTP         4
 #define IPL_LP20        4
@@ -771,6 +776,7 @@ typedef struct pdp_dib DIB;
 #define VEC_CR          0230
 #define VEC_RP          0254
 #define VEC_RY          0264
+#define VEC_CH          0270
 #define VEC_DZRX        0340
 #define VEC_DZTX        0344
 #define VEC_LP20        0754
