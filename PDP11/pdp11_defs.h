@@ -576,6 +576,8 @@ typedef struct pdp_dib DIB;
 #define IOLN_PCLK       006
 #define IOBA_DC         (IOPAGEBASE + 014000)           /* DC11 */
 #define IOLN_DC         (DCX_LINES * 010)
+#define IOBA_CH         (IOPAGEBASE + 004140)           /* CH11 Chaosnet */
+#define IOLN_CH         020
 #define IOBA_RL         (IOPAGEBASE + 014400)           /* RL11 */
 #define IOLN_RL         012
 #define IOBA_XQ         (IOPAGEBASE + 014440)           /* DEQNA/DELQA */
@@ -687,6 +689,7 @@ typedef struct pdp_dib DIB;
 #define INT_V_RS        18
 #define INT_V_UCB       19
 #define INT_V_RPB       20
+#define INT_V_CH        21
 
 #define INT_V_PIR4      0                               /* BR4 */
 #define INT_V_TTI       1
@@ -751,6 +754,7 @@ typedef struct pdp_dib DIB;
 #define INT_PIR3        (1u << INT_V_PIR3)
 #define INT_PIR2        (1u << INT_V_PIR2)
 #define INT_PIR1        (1u << INT_V_PIR1)
+#define INT_CH          (1u << INT_V_CH)
 
 #define INT_INTERNAL7   (INT_PIR7)
 #define INT_INTERNAL6   (INT_PIR6 | INT_CLK)
@@ -786,6 +790,7 @@ typedef struct pdp_dib DIB;
 #define IPL_RS          5
 #define IPL_UCA         5
 #define IPL_RPB         5
+#define IPL_CH          5
 #define IPL_PTR         4
 #define IPL_PTP         4
 #define IPL_TTI         4
@@ -838,6 +843,7 @@ typedef struct pdp_dib DIB;
 #define VEC_TA          0260
 #define VEC_RX          0264
 #define VEC_RY          0264
+#define VEC_CH          0270
 #define VEC_DLI         0300
 #define VEC_DLO         0304
 #define VEC_DCI         0300

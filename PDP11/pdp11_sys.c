@@ -112,6 +112,7 @@ extern DEVICE xu_dev, xub_dev;
 extern DEVICE ke_dev;
 extern DEVICE kg_dev;
 extern DEVICE uca_dev, ucb_dev;
+extern DEVICE ch_dev;
 extern UNIT cpu_unit;
 extern REG cpu_reg[];
 extern uint16 *M;
@@ -185,6 +186,7 @@ DEVICE *sim_devices[] = {
     &xub_dev,
     &kg_dev,
     &ke_dev,
+    &ch_dev,
 #else
     &clk_dev,
     &tti_dev,
