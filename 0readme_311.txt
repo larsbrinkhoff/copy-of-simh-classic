@@ -1,11 +1,11 @@
-Notes For V3.10
+Notes For V3.11
 
 3.X aka "SimH Classic" is my original code base, with mutually-agreed
 extensions by Dave Bryan. It emphasizes continuity and upward compatibility 
 of APIs and data structures so that the simulators can remain largely
 untouched by improvements and extensions in the core libraries.
 
-The current release is 3.10. 3.10 will provide the basis for my future
+The current release is 3.11. 3.11 will provide the basis for my future
 simulation work and for Dave Bryan's HP simulators.
 
 
@@ -47,16 +47,15 @@ simulation work and for Dave Bryan's HP simulators.
 
 1.7 HP3000
 
-- New release (from Dave Bryan).
+- New release (from Dave Bryan). Moved to its own subsite.
 
 1.8 HP2100
 
-- New release (from Dave Bryan).
+- New release (from Dave Bryan). Move to its own subsite.
 
 1.9 AltairZ80, IBM 1130, SWTP 6800
 
-- Removed. These sources have moved on to the 4.0 base. The versions
-  I had were too far removed from current source to be useful.
+- Removed.
 
 1.10 Sigma
 
