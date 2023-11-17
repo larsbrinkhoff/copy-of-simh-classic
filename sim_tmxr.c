@@ -71,8 +71,10 @@
    tmxr_poll_conn -     poll for connection
    tmxr_reset_ln -      reset line
    tmxr_getc_ln -       get character for line
+   tmxr_get_packet_ln - get packet for line
    tmxr_poll_rx -       poll receive
    tmxr_putc_ln -       put character for line
+   tmxr_put packet_ln - put packet for line
    tmxr_poll_tx -       poll transmit
    tmxr_set_modem_control_passthru -    enable modem control on a multiplexer
    tmxr_set_get_modem_bits -            set and/or get a line modem bits
@@ -383,6 +385,34 @@ if (lp->rxbpi == lp->rxbpr)                             /* empty? zero ptrs */
 return val;
 }
 
+/* Get UDP packet from line
+
+   Inputs:
+        *lp     =       pointer to line descriptor
+   Outputs:
+        **pbuf  =       pointer to pointer to packet data
+        *psiz   =       pointer to size of packet
+        status  =       ok, or connection lost
+*/
+
+t_stat tmxr_get_packet_ln (TMLN *lp, const uint8 **pbuf, size_t *psize)
+{
+int32 c;
+static uint8 buf[TMXR_MAXBUF];
+int i = 0;
+*pbuf = NULL;
+*psize = 0;
+if (!lp->conn)
+  return SCPE_LOST;
+while (TMXR_VALID & (c = tmxr_getc_ln (lp)))
+  buf[i++] = c;
+if (i > 0) {
+  *pbuf = buf;
+  *psize = i;
+}
+return SCPE_OK;                                     /* char sent */
+}
+
 /* Poll for input
 
    Inputs:
@@ -588,6 +618,28 @@ lp->xmte = 0;                                           /* no room, dsbl line */
 return SCPE_STALL;                                      /* char not sent */
 }
 
+/* Store UDP packet in line buffer
+
+   Inputs:
+        *lp     =       pointer to line descriptor
+   Outputs:
+        *buf    =       pointer to packet data
+        *size   =       size of packet
+        status  =       ok, or connection lost
+*/
+
+t_stat tmxr_put_packet_ln (TMLN *lp, const uint8 *buf, size_t size)
+{
+int i;
+if (!lp->conn)
+  return SCPE_LOST;
+for (i = 0; i < size; i++)
+  tmxr_putc_ln (lp, buf[i]);
+tmxr_send_buffered_data (lp);
+lp->txbpr = lp->txbpi = lp->txcnt = 0;   /* clear the transmit indexes */
+return SCPE_OK;
+}
+
 /* Poll for output
 
    Inputs:
@@ -663,27 +715,67 @@ return (lp->txbpi - lp->txbpr + ((lp->txbpi < lp->txbpr)? TMXR_MAXBUF: 0));
 
 t_stat tmxr_open_master (TMXR *mp, char *cptr)
 {
-int32 i, port;
+int32 i, port, line = -1;
 SOCKET sock;
 TMLN *lp;
 t_stat r;
+int flags = 0;
+char *comma, *param, str[10];
+char *peer = NULL;
 
-port = (int32) get_uint (cptr, 10, 65535, &r);          /* get port */
-if ((r != SCPE_OK) || (port == 0))
-    return SCPE_ARG;
-sock = sim_master_sock (cptr, &r);                      /* make master socket */
+do {
+  comma = strchr (cptr, ',');
+  if (comma)
+    *comma = 0;
+  if (isdigit(*cptr)) {
+    port = (int32) get_uint (cptr, 10, 65535, &r);          /* get port */
+    if ((r != SCPE_OK) || (port == 0))
+        return SCPE_ARG;
+  } else {
+    param = strchr (cptr, '=');
+    if (param)
+      *param++ = 0;
+    if (strcasecmp (cptr, "buffer") == 0) {
+      ;
+    } else if (strcasecmp (cptr, "line") == 0) {
+      if (param == NULL)
+        return SCPE_ARG;
+      line = (int32) get_uint (param, 10, mp->lines-1, &r);
+      if (r)
+        return SCPE_ARG;
+    } else if (strcasecmp (cptr, "udp") == 0) {
+      flags |= SIM_SOCK_OPT_DATAGRAM;
+      flags |= SIM_SOCK_OPT_NODELAY;
+    } else if (strcasecmp (cptr, "connect") == 0) {
+      peer = param;
+    }
+  }
+  if (comma)
+    cptr = comma + 1;
+} while (comma != NULL);
+if (sim_switches & SWMASK ('U'))
+  flags |= SIM_SOCK_OPT_REUSEADDR;
+snprintf(str, sizeof str, "%d", port);
+if (flags & SIM_SOCK_OPT_DATAGRAM)
+  sock = sim_connect_sock_ex (str, peer, "localhost", NULL, flags);
+else
+  sock = sim_master_sock_ex (str, &r, flags);                      /* make master socket */
 if (sock == INVALID_SOCKET)                             /* open error */
     return SCPE_OPENERR;
 sim_printf ("Listening on port %d (socket %d)\n", port, sock);
 mp->port = port;                                        /* save port */
-mp->master = sock;                                      /* save master socket */
+if ((flags & SIM_SOCK_OPT_DATAGRAM) == 0)
+  mp->master = sock;                                    /* save master socket */
 for (i = 0; i < mp->lines; i++) {                       /* initialize lines */
     lp = mp->ldsc + i;
 
     if (tmxr_is_extended == NULL                        /* if the line  */
       || tmxr_is_extended (lp) == FALSE) {              /*   is not extended */
         tmxr_init_line (lp);                            /*     then initialize the line */
-        lp->conn = 0;                                   /*       and clear the connection */
+        if ((flags & SIM_SOCK_OPT_DATAGRAM) && i == line)
+          lp->conn = sock;
+        else
+          lp->conn = 0;                                   /*       and clear the connection */
         }
     }
 return SCPE_OK;
