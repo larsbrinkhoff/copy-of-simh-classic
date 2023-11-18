@@ -55,7 +55,7 @@
 
 #define TMXR_V_VALID    15
 #define TMXR_VALID      (1 << TMXR_V_VALID)
-#define TMXR_MAXBUF     256                             /* buffer size */
+#define TMXR_MAXBUF     512                             /* buffer size */
 #define TMXR_GUARD      12                              /* buffer guard */
 
 /* Modem Control Bits */
