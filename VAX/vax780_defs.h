@@ -324,6 +324,8 @@ typedef struct {
 #define IOLN_PTR        004
 #define IOBA_PTP        (IOPAGEBASE + 017554)           /* PC11 punch */
 #define IOLN_PTP        004
+#define IOBA_CH         (IOPAGEBASE + 004140)           /* CH11 Chaosnet */
+#define IOLN_CH         020
 
 /* Interrupt assignments; within each level, priority is right to left */
 /* CD11 must be defined but is not allowed in the configuration */
@@ -339,6 +341,7 @@ typedef struct {
 #define INT_V_TS        6
 #define INT_V_RY        7
 #define INT_V_XU        8
+#define INT_V_CH        9
 
 #define INT_V_LPT       0                               /* BR4 */
 #define INT_V_PTR       1
@@ -357,6 +360,7 @@ typedef struct {
 #define INT_LPT         (1u << INT_V_LPT)
 #define INT_PTR         (1u << INT_V_PTR)
 #define INT_PTP         (1u << INT_V_PTP)
+#define INT_CH          (1u << INT_V_CH)
 
 #define IPL_CR          (0x16 - IPL_HMIN)
 #define IPL_DZRX        (0x15 - IPL_HMIN)
@@ -368,6 +372,7 @@ typedef struct {
 #define IPL_TS          (0x15 - IPL_HMIN)
 #define IPL_RY          (0x15 - IPL_HMIN)
 #define IPL_XU          (0x15 - IPL_HMIN)
+#define IPL_CH          (0x15 - IPL_HMIN)
 #define IPL_LPT         (0x14 - IPL_HMIN)
 #define IPL_PTR         (0x14 - IPL_HMIN)
 #define IPL_PTP         (0x14 - IPL_HMIN)
@@ -389,6 +394,7 @@ typedef struct {
 #define VEC_TQ          0260
 #define VEC_RX          0264
 #define VEC_RY          0264
+#define VEC_CH          0270
 #define VEC_DZRX        0300
 #define VEC_DZTX        0304
 
