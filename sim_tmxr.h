@@ -83,6 +83,7 @@ struct tmln {
     int32               txbpr;                          /* xmt buf remove */
     int32               txbpi;                          /* xmt buf insert */
     int32               txcnt;                          /* xmt count */
+    int32               flags;                          /* socket flags */
     FILE                *txlog;                         /* xmt log file */
     char                *txlogname;                     /* xmt log file name */
     char                rxb[TMXR_MAXBUF];               /* rcv buffer */

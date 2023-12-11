@@ -447,6 +447,8 @@ for (i = 0; i < mp->lines; i++) {                       /* loop thru lines */
         if (tmxr_is_extended != NULL                    /* if the line */
           && tmxr_is_extended (lp) == TRUE)             /*   is extended */
             continue;                                   /*     then skip the Telnet processing */
+        if (lp->flags & SIM_SOCK_OPT_DATAGRAM)          /* if datagram */
+            continue;                                   /*     then skip the Telnet processing */
 
         memset (&lp->rbr[j], 0, nbytes);                /* clear status */
 
@@ -715,11 +717,10 @@ return (lp->txbpi - lp->txbpr + ((lp->txbpi < lp->txbpr)? TMXR_MAXBUF: 0));
 
 t_stat tmxr_open_master (TMXR *mp, char *cptr)
 {
-int32 i, port, line = -1;
+int32 i, port, line = -1, flags = 0;
 SOCKET sock;
 TMLN *lp;
 t_stat r;
-int flags = 0;
 char *comma, *param, str[10];
 char *peer = NULL;
 
@@ -772,11 +773,13 @@ for (i = 0; i < mp->lines; i++) {                       /* initialize lines */
     if (tmxr_is_extended == NULL                        /* if the line  */
       || tmxr_is_extended (lp) == FALSE) {              /*   is not extended */
         tmxr_init_line (lp);                            /*     then initialize the line */
-        if ((flags & SIM_SOCK_OPT_DATAGRAM) && i == line)
+        lp->conn = 0;                                   /*       and clear the connection */
+        lp->flags = 0;
+        if ((flags & SIM_SOCK_OPT_DATAGRAM) && i == line) {
           lp->conn = sock;
-        else
-          lp->conn = 0;                                   /*       and clear the connection */
+          lp->flags = flags;
         }
+      }
     }
 return SCPE_OK;
 }
